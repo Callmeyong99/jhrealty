@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bath, BedDouble, Maximize, MapPin, Calendar, Car, Compass, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Bath, BedDouble, Maximize, MapPin, Calendar, Car, Compass, CheckCircle2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPropertyById } from "@/data/properties";
 
@@ -125,18 +125,23 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
-              <Button variant="gold" className="w-full mb-3" onClick={() => {
-                const el = document.getElementById("contact");
-                if (el) {
-                  navigate("/");
-                  setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 300);
-                } else {
-                  navigate("/");
-                }
-              }}>
-                预约看房
+              <Button variant="gold" className="w-full mb-3" asChild>
+                <a
+                  href={`https://api.whatsapp.com/send?phone=601110508741&text=${encodeURIComponent(`你好，我对房源【${property.title}】感兴趣，想了解更多详情。`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  WhatsApp 咨询
+                </a>
               </Button>
-              <Button variant="hero-outline" className="w-full" onClick={() => navigate("/")}>
+              <Button variant="hero-outline" className="w-full mb-3" asChild>
+                <a href="tel:+601110508741">
+                  <Phone className="w-4 h-4 mr-2" />
+                  拨打电话
+                </a>
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => navigate("/")}>
                 返回首页
               </Button>
             </div>
