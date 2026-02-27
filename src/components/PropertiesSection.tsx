@@ -1,40 +1,10 @@
 import { motion } from "framer-motion";
 import { Bath, BedDouble, Maximize } from "lucide-react";
-import property1 from "@/assets/property-1.jpg";
-import property2 from "@/assets/property-2.jpg";
-import property3 from "@/assets/property-3.jpg";
-
-const properties = [
-  {
-    image: property1,
-    title: "城市天际公寓",
-    location: "市中心金融区",
-    price: "¥680万",
-    beds: 3,
-    baths: 2,
-    area: "168㎡",
-  },
-  {
-    image: property2,
-    title: "海景顶层豪宅",
-    location: "滨海新区",
-    price: "¥1,280万",
-    beds: 4,
-    baths: 3,
-    area: "320㎡",
-  },
-  {
-    image: property3,
-    title: "花园独栋别墅",
-    location: "城北生态区",
-    price: "¥520万",
-    beds: 5,
-    baths: 3,
-    area: "260㎡",
-  },
-];
+import { useNavigate } from "react-router-dom";
+import { properties } from "@/data/properties";
 
 const PropertiesSection = () => {
+  const navigate = useNavigate();
   return (
     <section id="properties" className="py-24 bg-background">
       <div className="container mx-auto px-6 md:px-12">
@@ -60,6 +30,7 @@ const PropertiesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
               className="group cursor-pointer"
+              onClick={() => navigate(`/property/${property.id}`)}
             >
               <div className="relative overflow-hidden rounded-lg mb-5">
                 <img
