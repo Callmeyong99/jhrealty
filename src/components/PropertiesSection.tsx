@@ -38,7 +38,7 @@ const PropertiesSection = () => {
               <div className="relative overflow-hidden rounded-lg mb-5">
                 <img
                   src={property.image}
-                  alt={property.title}
+                  alt={t(`propertyData.${property.id}.title`)}
                   className="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110"
                   loading="lazy"
                 />
@@ -46,8 +46,8 @@ const PropertiesSection = () => {
                   {property.price}
                 </div>
               </div>
-              <h3 className="text-xl font-display font-semibold text-foreground mb-1">{property.title}</h3>
-              <p className="text-muted-foreground font-body text-sm mb-4">{property.location}</p>
+              <h3 className="text-xl font-display font-semibold text-foreground mb-1">{t(`propertyData.${property.id}.title`)}</h3>
+              <p className="text-muted-foreground font-body text-sm mb-4">{t(`propertyData.${property.id}.location`)}</p>
               <div className="flex gap-5 text-muted-foreground font-body text-sm border-t border-border pt-4">
                 <span className="flex items-center gap-1.5"><BedDouble className="w-4 h-4" /> {property.beds} {t("properties.beds")}</span>
                 <span className="flex items-center gap-1.5"><Bath className="w-4 h-4" /> {property.baths} {t("properties.baths")}</span>
