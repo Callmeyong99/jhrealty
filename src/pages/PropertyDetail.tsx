@@ -15,6 +15,17 @@ const PropertyDetail = () => {
   const property = getPropertyById(id || "");
   const { t } = useTranslation();
 
+  // Get translated property content
+  const tp = (key: string) => t(`propertyData.${id}.${key}`);
+  const tpArray = (key: string): string[] => {
+    const val = t(`propertyData.${id}.${key}`, { returnObjects: true }) as unknown;
+    return Array.isArray(val) ? (val as string[]) : [];
+  };
+  const tpUnitTypes = (): Array<{ name: string; furnishing: string }> => {
+    const val = t(`propertyData.${id}.unitTypes`, { returnObjects: true }) as unknown;
+    return Array.isArray(val) ? (val as Array<{ name: string; furnishing: string }>) : [];
+  };
+
   if (!property) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -35,7 +46,7 @@ const PropertyDetail = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <span className="font-display font-semibold text-foreground">{property.title}</span>
+            <span className="font-display font-semibold text-foreground">{tp("title")}</span>
           </div>
           <LanguageToggle variant="detail" />
         </div>
@@ -48,7 +59,7 @@ const PropertyDetail = () => {
         transition={{ duration: 0.5 }}
         className="w-full h-[50vh] md:h-[60vh] overflow-hidden"
       >
-        <img src={property.image} alt={property.title} className="w-full h-full object-cover" />
+        <img src={property.image} alt={tp("title")} className="w-full h-full object-cover" />
       </motion.div>
 
       {/* Content */}
@@ -87,7 +98,7 @@ const PropertyDetail = () => {
                 </div>
               </div>
               <p className="flex items-center gap-2 text-muted-foreground font-body">
-                <MapPin className="w-4 h-4" /> {property.location}
+                <MapPin className="w-4 h-4" /> {tp("location")}
               </p>
             </div>
 
@@ -95,7 +106,7 @@ const PropertyDetail = () => {
             <div>
               <h2 className="text-xl font-display font-semibold text-foreground mb-4">{t("detail.highlights")}</h2>
               <div className="space-y-3">
-                {property.highlights.map((h) => (
+                {tpArray("highlights").map((h) => (
                   <div key={h} className="flex items-center gap-3 text-muted-foreground font-body">
                     <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                     {h}
@@ -107,7 +118,7 @@ const PropertyDetail = () => {
             {/* About */}
             <div>
               <h2 className="text-xl font-display font-semibold text-foreground mb-4">{t("detail.about")}</h2>
-              <p className="text-muted-foreground font-body leading-relaxed">{property.description}</p>
+              <p className="text-muted-foreground font-body leading-relaxed">{tp("description")}</p>
             </div>
 
             {/* Property Details Grid */}
@@ -115,12 +126,12 @@ const PropertyDetail = () => {
               <h2 className="text-xl font-display font-semibold text-foreground mb-4">{t("detail.propertyDetails")}</h2>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { icon: Home, label: t("detail.propertyType"), value: property.propertyType },
-                  { icon: Building2, label: t("detail.developer"), value: property.developer },
-                  { icon: Shield, label: t("detail.tenure"), value: property.tenure },
-                  { icon: Calendar, label: t("detail.completionYear"), value: property.completionYear },
-                  { icon: Hash, label: t("detail.totalUnits"), value: property.totalUnits },
-                  { icon: Clock, label: t("detail.status"), value: property.status },
+                  { icon: Home, label: t("detail.propertyType"), value: tp("propertyType") },
+                  { icon: Building2, label: t("detail.developer"), value: tp("developer") },
+                  { icon: Shield, label: t("detail.tenure"), value: tp("tenure") },
+                  { icon: Calendar, label: t("detail.completionYear"), value: tp("completionYear") },
+                  { icon: Hash, label: t("detail.totalUnits"), value: tp("totalUnits") },
+                  { icon: Clock, label: t("detail.status"), value: tp("status") },
                 ].map((item) => (
                   <div key={item.label} className="flex items-start gap-3 font-body text-sm">
                     <item.icon className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -137,12 +148,15 @@ const PropertyDetail = () => {
             <div>
               <h2 className="text-xl font-display font-semibold text-foreground mb-4">{t("detail.unitTypes")}</h2>
               <div className="space-y-4">
-                {property.unitTypes.map((unit) => (
+                {property.unitTypes.map((unit, idx) => {
+                  const translatedUnits = tpUnitTypes();
+                  const tUnit = translatedUnits[idx] || { name: unit.name, furnishing: unit.furnishing };
+                  return (
                   <div key={unit.name} className="bg-card border border-border rounded-lg p-5">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                       <div>
                         <span className="inline-block bg-muted text-muted-foreground text-xs font-body px-3 py-1 rounded-md font-medium">
-                          {unit.name}
+                          {tUnit.name}
                         </span>
                         <span className="text-xs text-muted-foreground font-body ml-2">{unit.size}</span>
                       </div>
@@ -153,10 +167,11 @@ const PropertyDetail = () => {
                       <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" /> {unit.baths} {t("properties.baths")}</span>
                       <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" /> {unit.size}</span>
                       <span>{unit.pricePerSqft}</span>
-                      <span>{t("detail.furnishing")}: {unit.furnishing}</span>
+                      <span>{t("detail.furnishing")}: {tUnit.furnishing}</span>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -164,7 +179,7 @@ const PropertyDetail = () => {
             <div>
               <h2 className="text-xl font-display font-semibold text-foreground mb-4">{t("detail.facilities")}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {property.facilities.map((f) => (
+                {tpArray("facilities").map((f) => (
                   <div key={f} className="flex items-center gap-2 text-muted-foreground font-body text-sm">
                     <Dumbbell className="w-4 h-4 text-accent flex-shrink-0" />
                     {f}
@@ -177,7 +192,7 @@ const PropertyDetail = () => {
             <div>
               <h2 className="text-xl font-display font-semibold text-foreground mb-4">{t("detail.features")}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {property.features.map((feature) => (
+                {tpArray("features").map((feature) => (
                   <div key={feature} className="flex items-center gap-2 text-muted-foreground font-body text-sm">
                     <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                     {feature}
@@ -202,25 +217,25 @@ const PropertyDetail = () => {
               <div className="space-y-4 mb-8 text-sm font-body">
                 <div className="flex justify-between text-muted-foreground">
                   <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {t("detail.yearBuilt")}</span>
-                  <span className="text-foreground font-medium">{property.yearBuilt}</span>
+                  <span className="text-foreground font-medium">{tp("yearBuilt")}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span className="flex items-center gap-2"><Car className="w-4 h-4" /> {t("detail.parking")}</span>
-                  <span className="text-foreground font-medium">{property.parking}</span>
+                  <span className="text-foreground font-medium">{tp("parking")}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span className="flex items-center gap-2"><Compass className="w-4 h-4" /> {t("detail.orientation")}</span>
-                  <span className="text-foreground font-medium">{property.orientation}</span>
+                  <span className="text-foreground font-medium">{tp("orientation")}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> {t("detail.tenure")}</span>
-                  <span className="text-foreground font-medium">{property.tenure}</span>
+                  <span className="text-foreground font-medium">{tp("tenure")}</span>
                 </div>
               </div>
 
               <Button variant="gold" className="w-full mb-3" asChild>
                 <a
-                  href={`https://api.whatsapp.com/send?phone=601110508741&text=${encodeURIComponent(`你好，我对房源【${property.title}】感兴趣，想了解更多详情。`)}`}
+                  href={`https://api.whatsapp.com/send?phone=601110508741&text=${encodeURIComponent(`Hi, I'm interested in【${tp("title")}】and would like to know more.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
