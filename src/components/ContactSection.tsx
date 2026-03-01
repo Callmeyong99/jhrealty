@@ -5,15 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const ContactSection = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  const { t } = useTranslation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("感谢您的咨询，我们会尽快联系您！");
+    toast.success(t("contact.successMessage"));
     setName("");
     setPhone("");
     setMessage("");
@@ -23,19 +25,18 @@ const ContactSection = () => {
     <section id="contact" className="py-24 bg-primary">
       <div className="container mx-auto px-6 md:px-12">
         <div className="grid lg:grid-cols-2 gap-16">
-          {/* Left: Info */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-gold font-body text-sm tracking-[0.2em] uppercase mb-3">Contact Us</p>
+            <p className="text-gold font-body text-sm tracking-[0.2em] uppercase mb-3">{t("contact.subtitle")}</p>
             <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground mb-6">
-              联系<span className="text-gradient-gold italic"> 我们</span>
+              {t("contact.title1")}<span className="text-gradient-gold italic">{t("contact.title2")}</span>
             </h2>
             <p className="text-primary-foreground/60 font-body text-lg leading-relaxed mb-10">
-              无论您是首次购房还是投资置业，我们都将为您提供最专业的建议和最贴心的服务。
+              {t("contact.description")}
             </p>
 
             <div className="space-y-6">
@@ -54,7 +55,6 @@ const ContactSection = () => {
             </div>
           </motion.div>
 
-          {/* Right: Form */}
           <motion.form
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -63,24 +63,24 @@ const ContactSection = () => {
             onSubmit={handleSubmit}
             className="bg-primary-foreground/5 backdrop-blur-sm rounded-lg p-8 md:p-10 border border-primary-foreground/10"
           >
-            <h3 className="text-xl font-display font-semibold text-primary-foreground mb-6">免费咨询预约</h3>
+            <h3 className="text-xl font-display font-semibold text-primary-foreground mb-6">{t("contact.formTitle")}</h3>
             <div className="space-y-5">
               <Input
-                placeholder="您的姓名"
+                placeholder={t("contact.namePlaceholder")}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
                 className="bg-primary-foreground/10 border-primary-foreground/15 text-primary-foreground placeholder:text-primary-foreground/40 focus-visible:ring-accent"
               />
               <Input
-                placeholder="联系电话"
+                placeholder={t("contact.phonePlaceholder")}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 className="bg-primary-foreground/10 border-primary-foreground/15 text-primary-foreground placeholder:text-primary-foreground/40 focus-visible:ring-accent"
               />
               <Textarea
-                placeholder="请描述您的需求（如：预算、区域偏好、房型等）"
+                placeholder={t("contact.messagePlaceholder")}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={4}
@@ -88,7 +88,7 @@ const ContactSection = () => {
               />
               <Button variant="gold" size="lg" className="w-full" type="submit">
                 <Send className="w-4 h-4 mr-2" />
-                提交咨询
+                {t("contact.submit")}
               </Button>
             </div>
           </motion.form>
