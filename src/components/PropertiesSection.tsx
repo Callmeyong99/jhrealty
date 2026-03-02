@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Bath, BedDouble, Maximize, Search, X } from "lucide-react";
+import { Bath, BedDouble, Maximize, Search, X, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { properties } from "@/data/properties";
+import { useProperties, formatPrice, type ApiProperty } from "@/hooks/useProperties";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,52 +12,51 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const extractPrice = (priceStr: string): number => {
-  const match = priceStr.replace(/,/g, "").match(/[\d.]+/);
-  return match ? parseFloat(match[0]) : 0;
-};
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PropertiesSection = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { data: properties = [], isLoading, isError } = useProperties();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
 
+  const isZh = i18n.language === "zh";
+
+  const getTitle = (p: ApiProperty) => (isZh ? p.title : p.titleEn);
+  const getLocation = (p: ApiProperty) => (isZh ? p.location : p.locationEn);
+
   const locations = useMemo(
-    () => [...new Set(properties.map((p) => p.id))],
-    []
+    () => [...new Map(properties.map((p) => [p.location, p])).values()],
+    [properties]
   );
 
   const filteredProperties = useMemo(() => {
     return properties.filter((property) => {
-      const title = t(`propertyData.${property.id}.title`) as string;
-      const location = t(`propertyData.${property.id}.location`) as string;
+      const title = getTitle(property);
+      const location = getLocation(property);
 
-      // Text search
       const query = searchQuery.toLowerCase();
       const matchesSearch =
         !query ||
         title.toLowerCase().includes(query) ||
         location.toLowerCase().includes(query);
 
-      // Location filter
       const matchesLocation =
-        locationFilter === "all" || property.id === locationFilter;
+        locationFilter === "all" || property.location === locationFilter;
 
-      // Price filter
-      const price = extractPrice(property.price);
+      const price = property.price;
       let matchesPrice = true;
-      if (priceFilter === "under500") matchesPrice = price < 500;
-      else if (priceFilter === "500to800") matchesPrice = price >= 500 && price <= 800;
-      else if (priceFilter === "800to1200") matchesPrice = price >= 800 && price <= 1200;
-      else if (priceFilter === "above1200") matchesPrice = price > 1200;
+      if (priceFilter === "under500k") matchesPrice = price < 500000;
+      else if (priceFilter === "500kto800k") matchesPrice = price >= 500000 && price <= 800000;
+      else if (priceFilter === "800kto1.2m") matchesPrice = price >= 800000 && price <= 1200000;
+      else if (priceFilter === "above1.2m") matchesPrice = price > 1200000;
 
       return matchesSearch && matchesLocation && matchesPrice;
     });
-  }, [searchQuery, locationFilter, priceFilter, t]);
+  }, [searchQuery, locationFilter, priceFilter, properties, i18n.language]);
 
   const hasFilters = searchQuery || locationFilter !== "all" || priceFilter !== "all";
 
@@ -115,9 +114,9 @@ const PropertiesSection = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("properties.allLocations")}</SelectItem>
-              {locations.map((id) => (
-                <SelectItem key={id} value={id}>
-                  {t(`propertyData.${id}.location`)}
+              {locations.map((p) => (
+                <SelectItem key={p.location} value={p.location}>
+                  {getLocation(p)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -129,16 +128,37 @@ const PropertiesSection = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("properties.allPrices")}</SelectItem>
-              <SelectItem value="under500">{t("properties.priceUnder500")}</SelectItem>
-              <SelectItem value="500to800">{t("properties.price500to800")}</SelectItem>
-              <SelectItem value="800to1200">{t("properties.price800to1200")}</SelectItem>
-              <SelectItem value="above1200">{t("properties.priceAbove1200")}</SelectItem>
+              <SelectItem value="under500k">{t("properties.priceUnder500k")}</SelectItem>
+              <SelectItem value="500kto800k">{t("properties.price500kto800k")}</SelectItem>
+              <SelectItem value="800kto1.2m">{t("properties.price800kto1.2m")}</SelectItem>
+              <SelectItem value="above1.2m">{t("properties.priceAbove1.2m")}</SelectItem>
             </SelectContent>
           </Select>
         </motion.div>
 
+        {/* Loading */}
+        {isLoading && (
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-4">
+                <Skeleton className="w-full h-72 rounded-lg" />
+                <Skeleton className="w-3/4 h-6" />
+                <Skeleton className="w-1/2 h-4" />
+                <Skeleton className="w-full h-10" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
+        {isError && (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground font-body text-lg">{t("properties.loadError")}</p>
+          </div>
+        )}
+
         {/* Results */}
-        {filteredProperties.length > 0 ? (
+        {!isLoading && !isError && filteredProperties.length > 0 && (
           <div className="grid md:grid-cols-3 gap-8">
             {filteredProperties.map((property, i) => (
               <motion.div
@@ -153,25 +173,31 @@ const PropertiesSection = () => {
                 <div className="relative overflow-hidden rounded-lg mb-5">
                   <img
                     src={property.image}
-                    alt={t(`propertyData.${property.id}.title`)}
+                    alt={getTitle(property)}
                     className="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/placeholder.svg";
+                    }}
                   />
                   <div className="absolute top-4 right-4 bg-accent text-accent-foreground font-body font-semibold text-sm px-4 py-1.5 rounded">
-                    {property.price}
+                    {formatPrice(property.price)}
                   </div>
                 </div>
-                <h3 className="text-xl font-display font-semibold text-foreground mb-1">{t(`propertyData.${property.id}.title`)}</h3>
-                <p className="text-muted-foreground font-body text-sm mb-4">{t(`propertyData.${property.id}.location`)}</p>
+                <h3 className="text-xl font-display font-semibold text-foreground mb-1">{getTitle(property)}</h3>
+                <p className="text-muted-foreground font-body text-sm mb-4">{getLocation(property)}</p>
                 <div className="flex gap-5 text-muted-foreground font-body text-sm border-t border-border pt-4">
                   <span className="flex items-center gap-1.5"><BedDouble className="w-4 h-4" /> {property.beds} {t("properties.beds")}</span>
                   <span className="flex items-center gap-1.5"><Bath className="w-4 h-4" /> {property.baths} {t("properties.baths")}</span>
-                  <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4" /> {property.area}</span>
+                  <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4" /> {property.area} sqft</span>
                 </div>
               </motion.div>
             ))}
           </div>
-        ) : (
+        )}
+
+        {/* No results */}
+        {!isLoading && !isError && filteredProperties.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
