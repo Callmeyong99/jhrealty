@@ -31,7 +31,6 @@ const ContactSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-gold font-body text-sm tracking-[0.2em] uppercase mb-3">{t("contact.subtitle")}</p>
             <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground mb-6">
               {t("contact.title1")}<span className="text-gradient-gold italic">{t("contact.title2")}</span>
             </h2>
