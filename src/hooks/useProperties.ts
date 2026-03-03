@@ -31,10 +31,17 @@ export interface ApiProperty {
   highlights: string[];
 }
 
+const convertGoogleDriveUrl = (url: string): string => {
+  const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  return url;
+};
+
 const fetchProperties = async (): Promise<ApiProperty[]> => {
   const res = await fetch(API_URL);
   if (!res.ok) throw new Error("Failed to fetch properties");
-  return res.json();
+  const data: ApiProperty[] = await res.json();
+  return data.map((p) => ({ ...p, image: convertGoogleDriveUrl(p.image) }));
 };
 
 export const useProperties = () => {
