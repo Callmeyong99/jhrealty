@@ -16,6 +16,7 @@ export interface ApiProperty {
   area: number;
   image: string;
   images: string[];
+  floorPlan: string;
   description: string;
   descriptionEn: string;
   propertyType: string;
