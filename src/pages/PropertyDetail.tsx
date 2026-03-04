@@ -66,20 +66,8 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      {/* Hero Image */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full h-[50vh] md:h-[60vh] overflow-hidden"
-      >
-        <img
-          src={property.image}
-          alt={title}
-          className="w-full h-full object-cover"
-          onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
-        />
-      </motion.div>
+      {/* Image Gallery */}
+      <PropertyGallery images={property.images} title={title} />
 
       {/* Content */}
       <div className="container mx-auto px-6 md:px-12 py-12">
