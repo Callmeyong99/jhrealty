@@ -9,6 +9,7 @@ import { useProperties, formatPrice, type ApiProperty } from "@/hooks/usePropert
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/LanguageToggle";
 import { Skeleton } from "@/components/ui/skeleton";
+import PropertyGallery from "@/components/PropertyGallery";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
