@@ -92,6 +92,7 @@ export default {
     status: "销售状态",
     furnishing: "装修",
     floorPlan: "户型图",
+    location: "位置",
   },
   propertyData: {
     "city-skyline-apartment": {
