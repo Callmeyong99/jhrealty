@@ -15,6 +15,7 @@ export interface ApiProperty {
   baths: number;
   area: number;
   image: string;
+  images: string[];
   description: string;
   descriptionEn: string;
   propertyType: string;
@@ -40,8 +41,17 @@ const convertGoogleDriveUrl = (url: string): string => {
 const fetchProperties = async (): Promise<ApiProperty[]> => {
   const res = await fetch(API_URL);
   if (!res.ok) throw new Error("Failed to fetch properties");
-  const data: ApiProperty[] = await res.json();
-  return data.map((p) => ({ ...p, image: convertGoogleDriveUrl(p.image) }));
+  const data = await res.json();
+  return data.map((p: any) => {
+    const mainImage = convertGoogleDriveUrl(p.image || "");
+    // Parse images field: comma-separated URLs from Google Sheet
+    const rawImages = typeof p.images === "string" && p.images.trim()
+      ? p.images.split(",").map((url: string) => convertGoogleDriveUrl(url.trim()))
+      : [];
+    // Ensure main image is first, deduplicate
+    const allImages = [mainImage, ...rawImages.filter((img: string) => img !== mainImage)].filter(Boolean);
+    return { ...p, image: mainImage, images: allImages };
+  });
 };
 
 export const useProperties = () => {
