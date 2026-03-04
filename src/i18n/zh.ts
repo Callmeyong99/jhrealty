@@ -91,6 +91,7 @@ export default {
     totalUnits: "总户数",
     status: "销售状态",
     furnishing: "装修",
+    floorPlan: "户型图",
   },
   propertyData: {
     "city-skyline-apartment": {
