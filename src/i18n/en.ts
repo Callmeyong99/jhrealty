@@ -91,7 +91,8 @@ export default {
     totalUnits: "Total Units",
     status: "Sales Status",
     furnishing: "Furnishing",
-    floorPlan: "Floor Plan",
+floorPlan: "Floor Plan",
+    location: "Location",
   },
   propertyData: {
     "city-skyline-apartment": {
