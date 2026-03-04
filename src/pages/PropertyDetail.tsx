@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Bath, BedDouble, Maximize, MapPin, Calendar, Car, Compass,
-  CheckCircle2, Phone, Building2, Shield, Hash, Clock, Home, Dumbbell
+  CheckCircle2, Phone, Building2, Shield, Hash, Clock, Home, Dumbbell, Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProperties, formatPrice, type ApiProperty } from "@/hooks/useProperties";
@@ -179,6 +179,26 @@ const PropertyDetail = () => {
                       {feature}
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Floor Plan */}
+            {property.floorPlan && (
+              <div>
+                <h2 className="text-xl font-display font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-accent" />
+                  {t("detail.floorPlan")}
+                </h2>
+                <div className="rounded-lg overflow-hidden border border-border bg-card">
+                  <img
+                    src={property.floorPlan}
+                    alt={`${title} - Floor Plan`}
+                    className="w-full object-contain max-h-[500px]"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/placeholder.svg";
+                    }}
+                  />
                 </div>
               </div>
             )}
