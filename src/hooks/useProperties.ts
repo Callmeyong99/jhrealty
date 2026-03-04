@@ -51,7 +51,8 @@ const fetchProperties = async (): Promise<ApiProperty[]> => {
       : [];
     // Ensure main image is first, deduplicate
     const allImages = [mainImage, ...rawImages.filter((img: string) => img !== mainImage)].filter(Boolean);
-    return { ...p, image: mainImage, images: allImages };
+    const floorPlan = p.floorPlan ? convertGoogleDriveUrl(p.floorPlan) : "";
+    return { ...p, image: mainImage, images: allImages, floorPlan };
   });
 };
 
