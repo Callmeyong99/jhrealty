@@ -15,6 +15,7 @@ export interface ApiProperty {
   baths: number;
   area: number;
   image: string;
+  images: string[];
   description: string;
   descriptionEn: string;
   propertyType: string;
