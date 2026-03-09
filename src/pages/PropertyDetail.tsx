@@ -217,7 +217,12 @@ const PropertyDetail = () => {
                   style={{ border: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(property.locationEn || location)}&output=embed`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                    // Pick the longest non-URL address for best accuracy
+                    [property.location, property.locationEn]
+                      .filter(a => a && !a.startsWith("http"))
+                      .sort((a, b) => b.length - a.length)[0] || location
+                  )}&output=embed`}
                   allowFullScreen
                 />
               </div>
