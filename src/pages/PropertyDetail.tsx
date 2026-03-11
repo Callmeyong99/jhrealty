@@ -241,7 +241,7 @@ const PropertyDetail = () => {
                       .filter(a => a && !a.startsWith("http"))
                       .sort((a, b) => b.length - a.length)[0];
                     const mapQuery = fromUrl || textAddr || location;
-                    return `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`;
+                    return `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
                   })()}
                   allowFullScreen
                 />
