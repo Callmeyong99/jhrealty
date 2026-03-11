@@ -218,30 +218,30 @@ const PropertyDetail = () => {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   src={(() => {
-                    // Try to extract query from Google Maps URL first
-                    const extractFromMapsUrl = (url: string): string | null => {
+                    // Extract coordinates from Google Maps URLs
+                    const extractCoords = (url: string): string | null => {
                       if (!url || !url.startsWith("http")) return null;
-                      // Match coordinates in URL like /@1.488,110.404 or /place/1.488,110.404
-                      const coordMatch = url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+                      // Skip short links (maps.app.goo.gl) - can't extract coords
+                      if (url.includes("goo.gl") || url.includes("cid=")) return null;
+                      // Match coordinates like /@1.488,110.404 or /place/1.488,110.404
+                      const coordMatch = url.match(/(?:@|place\/)(-?\d+\.?\d*),(-?\d+\.?\d*)/);
                       if (coordMatch) return `${coordMatch[1]},${coordMatch[2]}`;
-                      // Match ?q= or &q= parameter
+                      // Match ?q= parameter
                       try {
-                        const u = new URL(url);
-                        const q = u.searchParams.get("q");
+                        const q = new URL(url).searchParams.get("q");
                         if (q) return q;
                       } catch {}
-                      // Match /place/Name+Name/ pattern
+                      // Match /place/Name pattern
                       const placeMatch = url.match(/\/place\/([^/@]+)/);
                       if (placeMatch) return decodeURIComponent(placeMatch[1].replace(/\+/g, " "));
                       return null;
                     };
-                    // Priority: extract from Maps URL > longest text address > display location
-                    const fromUrl = extractFromMapsUrl(property.location) || extractFromMapsUrl(property.locationEn);
+                    const fromUrl = extractCoords(property.location) || extractCoords(property.locationEn);
                     const textAddr = [property.location, property.locationEn]
                       .filter(a => a && !a.startsWith("http"))
                       .sort((a, b) => b.length - a.length)[0];
                     const mapQuery = fromUrl || textAddr || location;
-                    return `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`;
+                    return `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`;
                   })()}
                   allowFullScreen
                 />
